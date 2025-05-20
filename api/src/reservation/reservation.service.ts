@@ -48,9 +48,7 @@ export class ReservationService {
     }));
   }
 
-  async reserve(reserveDTO: ReserveDTO): Promise<Reservation> {
-    const { concert_id: concertId, user_id: userId } = reserveDTO;
-
+  async reserve(concertId: string, userId: string): Promise<Reservation> {
     const concert = await this.concertService.findOne(concertId);
     if (concert.total_of_reservation >= concert.total_of_seat) {
       throw new BadRequestException(`No available seats.`);
@@ -76,9 +74,7 @@ export class ReservationService {
     return this.reservationRepository.save(newReservation);
   }
 
-  async cancel(cancelDTO: CancelDTO): Promise<Reservation> {
-    const { concert_id: concertId, user_id: userId } = cancelDTO;
-
+  async cancel(concertId: string, userId: string): Promise<Reservation> {
     const concert = await this.concertService.findOne(concertId);
 
     const latest = await this.reservationRepository.findOne({

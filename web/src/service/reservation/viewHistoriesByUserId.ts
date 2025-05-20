@@ -1,12 +1,11 @@
 import { Histories } from "@/interface";
 
 export default async function viewHistoriesByUserId(): Promise<Histories[]> {
-  // TODO change to real
-  const mockUserId = "a6ce088e-4da7-47a9-a44b-c3c92b81ec05";
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/reservation/viewHistories/${mockUserId}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/reservation/viewHistoriesByUserId`,
     {
       method: "GET",
+      credentials: "include",
     }
   );
 

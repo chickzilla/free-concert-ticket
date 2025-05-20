@@ -27,7 +27,7 @@ export class UserService {
     if (!user) throw new NotFoundException('User not found');
 
     const token = await this.jwtService.signAsync(
-      { username: user.username, role: user.role },
+      { username: user.username, role: user.role, user_id: user.id },
       { secret: process.env.JWT_SECRET },
     );
 

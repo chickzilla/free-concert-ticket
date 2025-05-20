@@ -6,17 +6,20 @@ import {
   Param,
   ParseUUIDPipe,
   Put,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { ReservationService } from './reservation.service';
 import { viewHistoriesResponseItem } from './dto/histories.dto';
 import { CancelDTO, countActionResponse, ReserveDTO } from './dto/reserve.dto';
 import { Reservation } from 'src/entities';
-import { RolesGuard } from 'src/guard';
+import { AuthGuard, RolesGuard } from 'src/guard';
 import { Roles } from 'src/decorator';
 import { UserRole } from 'src/const';
+import { RequestWithUser } from 'src/types/requestWithUser.type';
 
 @Controller('reservation')
+@UseGuards(AuthGuard)
 @UseGuards(RolesGuard)
 export class ReservationController {
   constructor(private readonly reservationService: ReservationService) {}
@@ -35,12 +38,12 @@ export class ReservationController {
     }
   }
 
-  @Get('/viewHistories/:uid')
+  @Get('/viewHistoriesByUserId')
   async viewHistoriesByUserId(
-    @Param('uid', new ParseUUIDPipe()) uid: string,
+    @Request() req: RequestWithUser,
   ): Promise<viewHistoriesResponseItem[]> {
     try {
-      return await this.reservationService.viewHistoryByUserId(uid);
+      return await this.reservationService.viewHistoryByUserId(req?.user_id);
     } catch (error) {
       console.error('Error fetching histories by user ID:', error);
       if (error instanceof Error) {
@@ -51,9 +54,15 @@ export class ReservationController {
   }
 
   @Put('/reserve')
-  async reserve(@Body() reserveDTO: ReserveDTO): Promise<Reservation> {
+  async reserve(
+    @Body() reserveDTO: ReserveDTO,
+    @Request() req: RequestWithUser,
+  ): Promise<Reservation> {
     try {
-      return await this.reservationService.reserve(reserveDTO);
+      return await this.reservationService.reserve(
+        reserveDTO.concert_id,
+        req?.user_id,
+      );
     } catch (error) {
       console.error('Error reserving concert:', error);
       if (error instanceof Error) {
@@ -64,9 +73,15 @@ export class ReservationController {
   }
 
   @Put('/cancel')
-  async cancel(@Body() cancelDTO: CancelDTO): Promise<Reservation> {
+  async cancel(
+    @Body() cancelDTO: CancelDTO,
+    @Request() req: RequestWithUser,
+  ): Promise<Reservation> {
     try {
-      return await this.reservationService.cancel(cancelDTO);
+      return await this.reservationService.cancel(
+        cancelDTO.concert_id,
+        req?.user_id,
+      );
     } catch (error) {
       console.error('Error cancelling reservation:', error);
       if (error instanceof Error) {

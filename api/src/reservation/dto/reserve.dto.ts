@@ -5,11 +5,6 @@ export class ReserveDTO {
   @IsString()
   @IsUUID()
   concert_id: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @IsUUID()
-  user_id: string;
 }
 
 export class CancelDTO {
@@ -17,11 +12,6 @@ export class CancelDTO {
   @IsString()
   @IsUUID()
   concert_id: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @IsUUID()
-  user_id: string;
 }
 
 export class countActionResponse {

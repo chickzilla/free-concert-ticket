@@ -1,10 +1,9 @@
 export default async function findAllWithReservationStatus() {
-  // TODO change to real
-  const mockUserId = "524d47f7-2659-483a-adfc-14ed353f3095";
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/concert/findAllWithReservationStatus/${mockUserId}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/concert/findAllWithReservationStatus`,
     {
       method: "GET",
+      credentials: "include",
     }
   );
 

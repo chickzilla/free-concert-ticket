@@ -7,17 +7,20 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { CreateConcertDto } from './dto';
 import { Concert } from 'src/entities';
 import { ConcertService } from './concert.service';
 import { TotalOfSeatResponse } from './dto/total-of-seats.dto';
-import { RolesGuard } from 'src/guard';
+import { AuthGuard, RolesGuard } from 'src/guard';
 import { Roles } from 'src/decorator';
 import { UserRole } from 'src/const';
+import { RequestWithUser } from 'src/types/requestWithUser.type';
 
 @Controller('concert')
+@UseGuards(AuthGuard)
 @UseGuards(RolesGuard)
 export class ConcertController {
   constructor(private readonly concertService: ConcertService) {}
@@ -77,12 +80,14 @@ export class ConcertController {
     }
   }
 
-  @Get('/findAllWithReservationStatus/:uid')
+  @Get('/findAllWithReservationStatus')
   async findAllWithReservationStatus(
-    @Param('uid', new ParseUUIDPipe()) uid: string,
+    @Req() req: RequestWithUser,
   ): Promise<Concert[]> {
     try {
-      return await this.concertService.findAllWithReservationStatus(uid);
+      return await this.concertService.findAllWithReservationStatus(
+        req?.user_id,
+      );
     } catch (error) {
       console.error('Error fetching concerts with reservation status:', error);
       if (error instanceof Error) {
