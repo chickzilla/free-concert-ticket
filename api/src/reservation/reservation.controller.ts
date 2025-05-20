@@ -3,7 +3,8 @@ import {
   Controller,
   Get,
   InternalServerErrorException,
-  Post,
+  Param,
+  ParseUUIDPipe,
   Put,
 } from '@nestjs/common';
 import { ReservationService } from './reservation.service';
@@ -21,6 +22,21 @@ export class ReservationController {
       return await this.reservationService.viewHistory();
     } catch (error) {
       console.error('Error fetching histories:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  @Get('/viewHistories/:uid')
+  async viewHistoriesByUserId(
+    @Param('uid', new ParseUUIDPipe()) uid: string,
+  ): Promise<viewHistoriesResponseItem[]> {
+    try {
+      return await this.reservationService.viewHistoryByUserId(uid);
+    } catch (error) {
+      console.error('Error fetching histories by user ID:', error);
       if (error instanceof Error) {
         throw error;
       }

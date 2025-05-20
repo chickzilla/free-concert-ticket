@@ -177,4 +177,52 @@ describe('ReservationService', () => {
       });
     });
   });
+
+  describe('viewHistoryByUserId()', () => {
+    it('should return reservation history for a specific user', async () => {
+      const mockReservations = [
+        {
+          id: '1',
+          created_at: new Date('2024-09-12T15:00:00.000Z'),
+          user: { username: 'Sara John' },
+          concert: { name: 'The festival Int 2024' },
+          action: 'CANCEL',
+        },
+        {
+          id: '2',
+          created_at: new Date('2024-09-12T10:39:20.000Z'),
+          user: { username: 'Sara John' },
+          concert: { name: 'The festival Int 2024' },
+          action: 'RESERVE',
+        },
+      ];
+
+      repositoryMock.find!.mockResolvedValue(mockReservations);
+
+      const result = await service.viewHistoryByUserId('user1');
+
+      expect(result).toEqual([
+        {
+          id: '1',
+          date: new Date('2024-09-12T15:00:00.000Z'),
+          username: 'Sara John',
+          concert_name: 'The festival Int 2024',
+          action: 'CANCEL',
+        },
+        {
+          id: '2',
+          date: new Date('2024-09-12T10:39:20.000Z'),
+          username: 'Sara John',
+          concert_name: 'The festival Int 2024',
+          action: 'RESERVE',
+        },
+      ]);
+
+      expect(repositoryMock.find).toHaveBeenCalledWith({
+        where: { userId: 'user1' },
+        relations: ['user', 'concert'],
+        order: { created_at: 'DESC' },
+      });
+    });
+  });
 });

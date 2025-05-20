@@ -30,6 +30,24 @@ export class ReservationService {
     }));
   }
 
+  async viewHistoryByUserId(
+    userId: string,
+  ): Promise<viewHistoriesResponseItem[]> {
+    const reservations = await this.reservationRepository.find({
+      where: { userId },
+      relations: ['user', 'concert'],
+      order: { created_at: 'DESC' },
+    });
+
+    return reservations.map((res) => ({
+      id: res.id,
+      date: res.created_at,
+      username: res.user?.username || 'Unknown',
+      concert_name: res.concert?.name || 'Unknown',
+      action: res.action,
+    }));
+  }
+
   async reserve(reserveDTO: ReserveDTO): Promise<Reservation> {
     const { concert_id: concertId, user_id: userId } = reserveDTO;
     const concert = await this.concertService.findOne(concertId);
