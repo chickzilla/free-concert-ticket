@@ -68,4 +68,19 @@ export class ConcertController {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  @Get('/findAllWithReservationStatus/:uid')
+  async findAllWithReservationStatus(
+    @Param('uid', new ParseUUIDPipe()) uid: string,
+  ): Promise<Concert[]> {
+    try {
+      return await this.concertService.findAllWithReservationStatus(uid);
+    } catch (error) {
+      console.error('Error fetching concerts with reservation status:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

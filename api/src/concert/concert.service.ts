@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { CreateConcertDto } from './dto';
 import { Concert } from '../entities';
 import { TotalOfSeatResponse } from './dto/total-of-seats.dto';
+import { ReservationAction } from '../const';
 
 @Injectable()
 export class ConcertService {
@@ -62,5 +63,40 @@ export class ConcertService {
     }
     concert.total_of_reservation = newTotalOfReverse;
     await this.concertRepo.save(concert);
+  }
+
+  async findAllWithReservationStatus(
+    userId: string,
+  ): Promise<(Concert & { isReserve: boolean })[]> {
+    const concerts = await this.concertRepo.find();
+
+    const reservations = await this.concertRepo
+      .createQueryBuilder('concert')
+      .leftJoinAndSelect(
+        'concert.reservations',
+        'reservation',
+        'reservation.userId = :userId',
+        {
+          userId,
+        },
+      )
+      .getMany();
+
+    const latestMap = new Map<string, ReservationAction>();
+
+    for (const concert of reservations) {
+      const latest = concert.reservations
+        ?.filter((r) => r.userId === userId)
+        .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())[0];
+
+      if (latest) {
+        latestMap.set(concert.id, latest.action);
+      }
+    }
+
+    return concerts.map((concert) => ({
+      ...concert,
+      isReserve: latestMap.get(concert.id) === ReservationAction.RESERVE,
+    }));
   }
 }
