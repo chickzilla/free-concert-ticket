@@ -25,12 +25,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="flex overflow-x-clip bg-gray-50 min-h-screen">
-        <aside className="h-screen sticky top-0">
+    <html lang="en" className="h-screen overflow-hidden">
+      <body className="flex h-screen overflow-hidden bg-gray-50">
+        <aside className="h-full sticky top-0">
           <Navbar />
         </aside>
-        <div className="m-6 bg-white h-auto w-full rounded-2xl">{children}</div>
+        <div className="m-6 bg-white h-full w-full rounded-2xl overflow-scroll">
+          {children}
+        </div>
         <Toaster />
       </body>
     </html>
