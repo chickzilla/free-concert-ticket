@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { viewHistoriesResponseItem } from './dto/histories.dto';
 import { ReservationAction } from '../const';
 import { ConcertService } from '../concert/concert.service';
-import { ReserveDTO } from './dto/reserve.dto';
+import { CancelDTO, ReserveDTO } from './dto/reserve.dto';
 
 @Injectable()
 export class ReservationService {
@@ -67,6 +67,31 @@ export class ReservationService {
       concertId,
       new_total_of_reservation,
     );
+    return this.reservationRepository.save(latest);
+  }
+
+  async cancel(cancelDTO: CancelDTO): Promise<Reservation> {
+    const { concert_id: concertId, user_id: userId } = cancelDTO;
+
+    const concert = await this.concertService.findOne(concertId);
+
+    const latest = await this.reservationRepository.findOne({
+      where: { concertId, userId },
+      order: { created_at: 'DESC' },
+    });
+
+    if (!latest || latest.action !== ReservationAction.RESERVE) {
+      throw new BadRequestException(`You have not reserved this concert.`);
+    }
+
+    const new_total_of_reservation = concert.total_of_reservation - 1;
+
+    latest.action = ReservationAction.CANCEL;
+    await this.concertService.updateTotalOfReservation(
+      concertId,
+      new_total_of_reservation,
+    );
+
     return this.reservationRepository.save(latest);
   }
 }

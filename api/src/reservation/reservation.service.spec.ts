@@ -134,4 +134,47 @@ describe('ReservationService', () => {
       );
     });
   });
+
+  describe('cancel()', () => {
+    it('should cancel a reservation if the latest action is RESERVE', async () => {
+      const mockConcert = {
+        id: 'concert1',
+        total_of_seat: 100,
+        total_of_reservation: 10,
+      };
+
+      const latestReservation = {
+        id: 'res1',
+        concertId: 'concert1',
+        userId: 'user1',
+        action: ReservationAction.RESERVE,
+        created_at: new Date(),
+      };
+
+      const updatedReservation = {
+        ...latestReservation,
+        action: ReservationAction.CANCEL,
+      };
+
+      concertServiceMock.findOne.mockResolvedValue(mockConcert);
+      concertServiceMock.updateTotalOfReservation.mockResolvedValue(undefined);
+      repositoryMock.findOne!.mockResolvedValue(latestReservation);
+      repositoryMock.save!.mockResolvedValue(updatedReservation);
+
+      const result = await service.cancel({
+        concert_id: 'concert1',
+        user_id: 'user1',
+      });
+
+      expect(result).toEqual(updatedReservation);
+      expect(concertServiceMock.updateTotalOfReservation).toHaveBeenCalledWith(
+        'concert1',
+        9,
+      );
+      expect(repositoryMock.save).toHaveBeenCalledWith({
+        ...latestReservation,
+        action: ReservationAction.CANCEL,
+      });
+    });
+  });
 });

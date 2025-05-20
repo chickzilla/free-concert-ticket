@@ -11,3 +11,15 @@ export class ReserveDTO {
   @IsUUID()
   user_id: string;
 }
+
+export class CancelDTO {
+  @IsNotEmpty()
+  @IsString()
+  @IsUUID()
+  concert_id: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsUUID()
+  user_id: string;
+}
