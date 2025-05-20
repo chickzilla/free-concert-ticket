@@ -7,28 +7,37 @@ import {
   Inbox,
   LogOut,
   RefreshCcw,
+  UserCog,
+  User,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import NavbarItem from "./navnat-item";
+import { toast } from "../ui/use-toast";
+import logout from "@/service/auth/logout";
 
 export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
   const [expanded, setExpanded] = useState(false);
   const pathname = usePathname();
 
+  const [username, setUsername] = useState("Unknown");
+
   useEffect(() => {
     const stored = localStorage.getItem("navbarExpanded");
-
     const isMobile = window.innerWidth < 680;
+
     if (isMobile) {
       setExpanded(false);
-      return;
-    }
-    if (stored === null) {
+    } else if (stored === null) {
       setExpanded(!isMobile);
     } else {
       setExpanded(stored === "true");
+    }
+
+    const name = localStorage?.getItem("username");
+    if (name) {
+      setUsername(name);
     }
   }, []);
 
@@ -38,8 +47,22 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
     window.dispatchEvent(new Event("expandNavbar"));
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          isError: true,
+        });
+      }
+    }
+  };
+
   return (
-    <div className="h-full flex-none relative max-w-60 min-w-[86px] bg-white border-r border-gray-200">
+    <div className="h-full flex-none relative max-w-60 sm:min-w-[20px] md:min-w-[86px] bg-white border-r border-gray-200">
       <button
         onClick={toggleExpand}
         type="button"
@@ -54,15 +77,31 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
         }`}
       >
         <div className="flex flex-col justify-between items-center gap-3.5 px-2">
-          <span
-            className={`text-xl text-center font-semibold overflow-hidden text-black text-nowrap transition-all ${
-              expanded ? "w-full" : "w-0"
-            }`}
-          >
-            Admin
-            {isAdmin && <p>(Admin)</p>}
-          </span>
-          <hr className="w-full bg-white my-5" />
+          {expanded ? (
+            <>
+              <span
+                className={`text-xl text-center font-semibold overflow-hidden text-black text-nowrap transition-all ${
+                  expanded ? "w-full" : "w-0"
+                }`}
+              >
+                {username}
+                {isAdmin && <p>(Admin)</p>}
+              </span>
+              <hr className="w-full bg-white my-5" />
+            </>
+          ) : (
+            <div
+              className={`flex items-center justify-center border-b border-gray-200 text-xl text-center font-semibold overflow-hidden text-black text-nowrap transition-all pb-5 ${
+                expanded ? "w-full" : "w-full"
+              }`}
+            >
+              {isAdmin ? (
+                <UserCog className="text-black" size={20} />
+              ) : (
+                <User className="text-black " size={20} />
+              )}
+            </div>
+          )}
         </div>
 
         <ul className="flex-1 flex gap-2.5 flex-col">
@@ -82,23 +121,15 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
             )}
             href={isAdmin ? "/admin/history" : "/history"}
           />
-          <NavbarItem
-            icon={<RefreshCcw size={20} />}
-            text="Switch"
-            expanded={expanded}
-            active={pathname.startsWith("/admin/switch")}
-            href="/admin/switch"
-          />
         </ul>
 
-        <div className="flex flex-col px-2">
-          <hr className="w-full bg-white my-5" />
+        <div onClick={handleLogout}>
           <NavbarItem
             icon={<LogOut size={20} />}
             text="Logout"
             expanded={expanded}
-            active={pathname.startsWith("/admin/logout")}
-            href="/admin/logout"
+            active={false}
+            href="/"
           />
         </div>
       </nav>

@@ -6,8 +6,7 @@ export function middleware(req: NextRequest) {
   const role = req.cookies.get("role")?.value;
   const pathname = req.nextUrl.pathname;
 
-  const publicPaths = ["/"];
-  const isPublicPath = publicPaths.includes(pathname);
+  const isPublicPath = pathname.match("/");
 
   if (isPublicPath) {
     return NextResponse.next();
