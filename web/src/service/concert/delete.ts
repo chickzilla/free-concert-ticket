@@ -7,6 +7,7 @@ export default async function deleteConcert({
     `${process.env.NEXT_PUBLIC_API_URL}/concert/delete/${id}`,
     {
       method: "DELETE",
+      credentials: "include",
     }
   );
 

@@ -5,6 +5,7 @@ export default async function findAll(): Promise<Concert[]> {
     `${process.env.NEXT_PUBLIC_API_URL}/concert/findAll`,
     {
       method: "GET",
+      credentials: "include",
     }
   );
 

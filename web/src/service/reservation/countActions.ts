@@ -5,6 +5,7 @@ export default async function countActions(): Promise<CountActionResponse> {
     `${process.env.NEXT_PUBLIC_API_URL}/reservation/countAction`,
     {
       method: "GET",
+      credentials: "include",
     }
   );
 

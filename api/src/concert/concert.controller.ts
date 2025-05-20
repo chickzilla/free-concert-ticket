@@ -7,17 +7,23 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateConcertDto } from './dto';
 import { Concert } from 'src/entities';
 import { ConcertService } from './concert.service';
 import { TotalOfSeatResponse } from './dto/total-of-seats.dto';
+import { RolesGuard } from 'src/guard';
+import { Roles } from 'src/decorator';
+import { UserRole } from 'src/const';
 
 @Controller('concert')
+@UseGuards(RolesGuard)
 export class ConcertController {
   constructor(private readonly concertService: ConcertService) {}
 
   @Post('/create')
+  @Roles(UserRole.ADMIN)
   async create(@Body() createConcertDto: CreateConcertDto): Promise<Concert> {
     try {
       return await this.concertService.create(createConcertDto);
@@ -31,6 +37,7 @@ export class ConcertController {
   }
 
   @Delete('/delete/:id')
+  @Roles(UserRole.ADMIN)
   async delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     try {
       await this.concertService.delete(id);
@@ -57,6 +64,7 @@ export class ConcertController {
   }
 
   @Get('/totalOfSeat')
+  @Roles(UserRole.ADMIN)
   async totalOfSeat(): Promise<TotalOfSeatResponse> {
     try {
       return await this.concertService.totalOfSeat();

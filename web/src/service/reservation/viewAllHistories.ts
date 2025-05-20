@@ -5,6 +5,7 @@ export default async function viewAllHistories(): Promise<Histories[]> {
     `${process.env.NEXT_PUBLIC_API_URL}/reservation/viewHistories`,
     {
       method: "GET",
+      credentials: "include",
     }
   );
 

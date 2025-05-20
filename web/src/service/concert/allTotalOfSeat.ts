@@ -5,6 +5,7 @@ export default async function allTotalOfSeat(): Promise<allTotalOfSeatResponse> 
     `${process.env.NEXT_PUBLIC_API_URL}/concert/totalOfSeat`,
     {
       method: "GET",
+      credentials: "include",
     }
   );
 

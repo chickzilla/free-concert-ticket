@@ -9,6 +9,7 @@ export default async function create({
 }) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/concert/create`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
