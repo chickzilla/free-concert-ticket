@@ -49,4 +49,23 @@ describe('ConcertService', () => {
       );
     });
   });
+
+  describe('delete()', () => {
+    it('should delete concert', async () => {
+      const concertId = 'mock-id';
+      const mockConcert = {
+        id: concertId,
+        name: 'To be deleted',
+        description: 'Some concert',
+        total_of_seat: 200,
+      };
+
+      repositoryMock.findOneBy = jest.fn().mockResolvedValue(mockConcert);
+      repositoryMock.delete = jest.fn().mockResolvedValue(undefined);
+
+      await expect(service.delete(concertId)).resolves.toBeUndefined();
+      expect(repositoryMock.findOneBy).toHaveBeenCalledWith({ id: concertId });
+      expect(repositoryMock.delete).toHaveBeenCalledWith(concertId);
+    });
+  });
 });

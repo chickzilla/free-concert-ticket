@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateConcertDto } from './dto';
@@ -15,6 +19,22 @@ export class ConcertService {
     try {
       const concert = this.concertRepo.create(createDTP);
       return this.concertRepo.save(concert);
+    } catch (error) {
+      console.error('Error creating concert:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async delete(id: string): Promise<void> {
+    try {
+      const concert = await this.concertRepo.findOneBy({ id });
+      if (!concert) {
+        throw new BadRequestException('Concert not found');
+      }
+      await this.concertRepo.delete(id);
     } catch (error) {
       console.error('Error creating concert:', error);
       if (error instanceof Error) {
