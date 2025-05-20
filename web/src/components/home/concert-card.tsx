@@ -14,6 +14,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import deleteConcert from "@/service/concert/delete";
+import { toast } from "../ui/use-toast";
 
 export default function ConcertCard({
   concert,
@@ -22,6 +24,27 @@ export default function ConcertCard({
   concert: Concert;
   onDelete?: (id: string) => void;
 }) {
+  const handleDelete = async () => {
+    try {
+      await deleteConcert({ id: concert.id });
+      toast({
+        title: "Success",
+        description: "Concert deleted successfully",
+        isError: false,
+      });
+      if (onDelete) {
+        onDelete(concert.id);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          isError: true,
+        });
+      }
+    }
+  };
   return (
     <div className="border rounded-md p-4 space-y-2 shadow-sm w-full">
       <div className="sm:text-2xl md:text-3xl font-semibold text-blue-400 border-b border-gray-200 pb-2">
@@ -68,7 +91,9 @@ export default function ConcertCard({
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction
-                onClick={() => {}}
+                onClick={() => {
+                  handleDelete();
+                }}
                 className="bg-red-500 hover:bg-red-600 hover:cursor-pointer"
               >
                 Yes, Delete

@@ -148,7 +148,7 @@ export function ConcertCreateForm() {
         <div className="flex justify-end">
           <Button
             type="submit"
-            className="bg-blue-400 text-white hover:bg-blue-700 text-sm sm:text-base"
+            className="bg-blue-400 text-white hover:bg-blue-700 text-sm sm:text-base hover:cursor-pointer"
           >
             <Save size={16} className="mr-2" />
             Save

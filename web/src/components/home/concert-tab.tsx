@@ -44,7 +44,15 @@ export default function ConcertTab() {
           {!loading && (
             <div className="space-y-4">
               {concerts.map((concert) => (
-                <ConcertCard key={concert.id} concert={concert} />
+                <ConcertCard
+                  key={concert.id}
+                  concert={concert}
+                  onDelete={(id: string) => {
+                    setConcerts((prev) =>
+                      prev.filter((concert) => concert.id !== id)
+                    );
+                  }}
+                />
               ))}
             </div>
           )}
