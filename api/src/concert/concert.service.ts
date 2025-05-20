@@ -43,4 +43,24 @@ export class ConcertService {
       total_of_seat: Number(result.total) || 0,
     };
   }
+
+  async findOne(id: string): Promise<Concert> {
+    const concert = await this.concertRepo.findOneBy({ id });
+    if (!concert) {
+      throw new BadRequestException('Concert not found');
+    }
+    return concert;
+  }
+
+  async updateTotalOfReservation(
+    id: string,
+    newTotalOfReverse: number,
+  ): Promise<void> {
+    const concert = await this.concertRepo.findOneBy({ id });
+    if (!concert) {
+      throw new BadRequestException('Concert not found');
+    }
+    concert.total_of_reservation = newTotalOfReverse;
+    await this.concertRepo.save(concert);
+  }
 }

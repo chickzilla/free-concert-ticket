@@ -3,6 +3,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { ReservationService } from './reservation.service';
 import { Reservation } from '../entities';
 import { Repository } from 'typeorm';
+import { ConcertService } from '../concert/concert.service';
+import { ReservationAction } from '../const';
 
 type MockType<T> = {
   [P in keyof T]?: jest.Mock<any>;
@@ -10,7 +12,15 @@ type MockType<T> = {
 
 const repositoryMockFactory: () => MockType<Repository<any>> = jest.fn(() => ({
   find: jest.fn(),
+  findOne: jest.fn(),
+  create: jest.fn(),
+  save: jest.fn(),
 }));
+
+const concertServiceMock = {
+  findOne: jest.fn(),
+  updateTotalOfReservation: jest.fn(),
+};
 
 describe('ReservationService', () => {
   let service: ReservationService;
@@ -23,6 +33,10 @@ describe('ReservationService', () => {
         {
           provide: getRepositoryToken(Reservation),
           useFactory: repositoryMockFactory,
+        },
+        {
+          provide: ConcertService,
+          useValue: concertServiceMock,
         },
       ],
     }).compile();
@@ -79,6 +93,45 @@ describe('ReservationService', () => {
         relations: ['user', 'concert'],
         order: { created_at: 'DESC' },
       });
+    });
+  });
+
+  describe('reserve()', () => {
+    it('should reserve successfully if no existing reservation', async () => {
+      const mockConcert = {
+        id: 'concert1',
+        total_of_seat: 100,
+        total_of_reservation: 10,
+      };
+
+      const mockReservation = {
+        id: 'res1',
+        concertId: 'concert1',
+        userId: 'user1',
+        action: ReservationAction.RESERVE,
+      };
+
+      concertServiceMock.findOne.mockResolvedValue(mockConcert);
+      concertServiceMock.updateTotalOfReservation.mockResolvedValue(undefined);
+      repositoryMock.findOne!.mockResolvedValue(null);
+      repositoryMock.create!.mockReturnValue(mockReservation);
+      repositoryMock.save!.mockResolvedValue(mockReservation);
+
+      const result = await service.reserve({
+        concert_id: 'concert1',
+        user_id: 'user1',
+      });
+
+      expect(result).toEqual(mockReservation);
+      expect(repositoryMock.create).toHaveBeenCalledWith({
+        concertId: 'concert1',
+        userId: 'user1',
+        action: ReservationAction.RESERVE,
+      });
+      expect(concertServiceMock.updateTotalOfReservation).toHaveBeenCalledWith(
+        'concert1',
+        11,
+      );
     });
   });
 });
