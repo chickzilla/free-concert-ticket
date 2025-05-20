@@ -4,7 +4,7 @@ import { UsersRound } from "lucide-react";
 export default function ConcertCard({ concert }: { concert: Concert }) {
   return (
     <div key={concert.id} className="border rounded-md p-4 space-y-2 shadow-sm">
-      <div className="text-base sm:text-lg font-semibold text-blue-600">
+      <div className="text-base sm:text-lg font-semibold text-blue-600 border-b  border-gray-200 pb-2">
         {concert.name}
       </div>
 
