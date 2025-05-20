@@ -1,3 +1,6 @@
+import { UserRole } from "@/const";
+
 export interface LoginResponse {
-  jwt: string;
+  username: string;
+  role: UserRole;
 }

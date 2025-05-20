@@ -9,7 +9,7 @@ import { User } from '../entities';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
-import { LoginDto } from './dto/login';
+import { LoginDto, LoginResponse } from './dto';
 
 @Injectable()
 export class UserService {
@@ -19,7 +19,7 @@ export class UserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(loginDTO: LoginDto, res: Response): Promise<void> {
+  async login(loginDTO: LoginDto, res: Response): Promise<LoginResponse> {
     const user = await this.userRepository.findOne({
       where: { username: loginDTO.username },
     });
@@ -42,5 +42,9 @@ export class UserService {
       sameSite: 'lax',
       maxAge: 24 * 60 * 60 * 1000,
     });
+    return {
+      username: user.username,
+      role: user.role,
+    };
   }
 }

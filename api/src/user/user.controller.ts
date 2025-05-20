@@ -17,9 +17,9 @@ export class UserController {
   async login(
     @Body() loginDTO: LoginDto,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<void> {
+  ): Promise<LoginResponse> {
     try {
-      await this.userService.login(loginDTO, response);
+      return await this.userService.login(loginDTO, response);
     } catch (error) {
       console.error('Error logging in:', error);
       if (error instanceof Error) {

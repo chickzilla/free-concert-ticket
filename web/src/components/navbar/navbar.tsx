@@ -70,15 +70,17 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
             icon={<Home size={20} />}
             text="Home"
             expanded={expanded}
-            active={pathname.startsWith("/admin/home")}
-            href="/admin/home"
+            active={pathname.startsWith(isAdmin ? "/admin/home" : "/home")}
+            href={isAdmin ? "/admin/home" : "/home"}
           />
           <NavbarItem
             icon={<Inbox size={20} />}
             text="History"
             expanded={expanded}
-            active={pathname.startsWith("/admin/history")}
-            href="/admin/history"
+            active={pathname.startsWith(
+              isAdmin ? "/admin/history" : "/history"
+            )}
+            href={isAdmin ? "/admin/history" : "/history"}
           />
           <NavbarItem
             icon={<RefreshCcw size={20} />}

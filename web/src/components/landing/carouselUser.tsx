@@ -2,6 +2,8 @@
 import login from "@/service/auth/login";
 import { User, UserCog } from "lucide-react";
 import { toast } from "../ui/use-toast";
+import { UserRole } from "@/const";
+import { useRouter } from "next/navigation";
 
 export default function CarouselUser({
   name,
@@ -12,16 +14,17 @@ export default function CarouselUser({
   bgColor: string;
   isAdmin?: boolean;
 }) {
+  const router = useRouter();
   const loginHandler = async () => {
     try {
-      await login(name);
+      const { username, role } = await login(name);
+      localStorage.setItem("username", username);
 
-      toast({
-        title: "Success",
-        description: `Logged in as ${name}`,
-        isError: false,
-      });
-      window.location.href = "/home";
+      if (role === UserRole.ADMIN) {
+        router.push("/admin/home");
+      } else {
+        router.push("/home");
+      }
     } catch (error) {
       if (error instanceof Error) {
         toast({

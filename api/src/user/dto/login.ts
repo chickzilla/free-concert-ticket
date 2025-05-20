@@ -1,4 +1,5 @@
 import { IsEmpty, IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { UserRole } from 'src/const';
 
 export class LoginDto {
   @IsNotEmpty()
@@ -7,5 +8,6 @@ export class LoginDto {
 }
 
 export class LoginResponse {
-  jwt: string;
+  username: string;
+  role: UserRole;
 }
