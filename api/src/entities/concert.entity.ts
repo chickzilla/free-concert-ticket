@@ -18,7 +18,10 @@ export class Concert {
   @Column()
   description: string;
 
-  @Column()
+  @Column({
+    type: 'int',
+    default: 0,
+  })
   total_of_reservation: number;
 
   @Column()
