@@ -7,6 +7,7 @@ import { ReservationModule } from './reservation/reservation.module';
 import { UserModule } from './user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UserSeeder } from './user/user.seeder';
 
 @Module({
   imports: [
@@ -34,6 +35,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     UserModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, UserSeeder],
 })
 export class AppModule {}
