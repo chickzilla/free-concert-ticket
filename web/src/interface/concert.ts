@@ -9,4 +9,5 @@ export interface Concert {
   total_of_reservation: number;
   total_of_seat: number;
   created_at: Date;
+  isReserve?: boolean;
 }

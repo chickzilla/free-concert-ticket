@@ -1,42 +1,57 @@
 "use client";
 
 import ConcertCard from "@/components/home/concert-card";
+import { toast } from "@/components/ui/use-toast";
 import { Concert } from "@/interface";
+import findAllWithReservationStatus from "@/service/concert/findAllWIthActionStatus";
 import { useEffect, useState } from "react";
 
 export default function Home() {
   const [concerts, setConcerts] = useState<Concert[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const mockConcerts: Concert[] = [
-      {
-        id: "1",
-        name: "Concert of Dreams",
-        description:
-          "An amazing live experience with spectacular lights and sound.",
-        total_of_seat: 300,
-        total_of_reservation: 150,
-        created_at: new Date(),
-      },
-      {
-        id: "2",
-        name: "Music Night 2024",
-        description:
-          "Join us for a night of musical magic and unforgettable memories.",
-        total_of_seat: 200,
-        total_of_reservation: 80,
-        created_at: new Date(),
-      },
-    ];
-    setConcerts(mockConcerts);
+    const fetchConcerts = async () => {
+      try {
+        const res = await findAllWithReservationStatus();
+        setConcerts(res);
+      } catch (error) {
+        if (error instanceof Error) {
+          toast({
+            title: "Error",
+            description: error.message,
+            isError: true,
+          });
+        }
+      }
+    };
+    fetchConcerts();
+    setLoading(false);
   }, []);
 
+  if (loading) {
+    return;
+  }
   return (
     <div className="flex flex-col items-center min-h-screen pt-10 bg-[#fbfbfb]">
       <div className="space-y-4 w-full ">
-        {concerts.map((concert) => (
-          <ConcertCard key={concert.id} concert={concert} />
-        ))}
+        {!loading && (
+          <>
+            {concerts.length === 0 ? (
+              <div className="flex items-center justify-center w-full h-full">
+                <div className="text-gray-500 text-2xl font-semibold py-10">
+                  No concerts found
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {concerts.map((concert) => (
+                  <ConcertCard key={concert.id} concert={concert} />
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );
