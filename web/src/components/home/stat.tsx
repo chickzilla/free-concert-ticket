@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import StatItem from "./stat-item";
 import allTotalOfSeat from "@/service/concert/allTotalOfSeat";
+import { toast } from "@/components/ui/use-toast";
 
 export default function Stat() {
   const [totalOfSeats, setTotalOfSeats] = useState(0);
@@ -12,14 +13,18 @@ export default function Stat() {
       try {
         const totalOfSeats = await allTotalOfSeat();
         setTotalOfSeats(totalOfSeats?.total_of_seat);
-        setLoading(false);
       } catch (error) {
         if (error instanceof Error) {
-          alert("Error fetching data: " + error.message);
+          toast({
+            title: "Error",
+            description: error.message,
+            isError: true,
+          });
         }
       }
     };
     fetchData();
+    setLoading(false);
   }, []);
 
   if (loading) {
