@@ -68,4 +68,32 @@ describe('ConcertService', () => {
       expect(repositoryMock.delete).toHaveBeenCalledWith(concertId);
     });
   });
+
+  describe('findAll()', () => {
+    it('should return all concerts', async () => {
+      const mockConcerts = [
+        {
+          id: '1',
+          name: 'Concert 1',
+          description: 'Desc 1',
+          total_of_reservation: 0,
+          total_of_seat: 100,
+        },
+        {
+          id: '2',
+          name: 'Concert 2',
+          description: 'Desc 2',
+          total_of_reservation: 100,
+          total_of_seat: 200,
+        },
+      ];
+
+      repositoryMock.find = jest.fn().mockResolvedValue(mockConcerts);
+
+      const result = await service.findAll();
+
+      expect(result).toEqual(mockConcerts);
+      expect(repositoryMock.find).toHaveBeenCalled();
+    });
+  });
 });

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   ParseUUIDPipe,
   Post,
@@ -22,5 +23,10 @@ export class ConcertController {
   @Delete('/delete/:id')
   async delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
     return this.concertService.delete(id);
+  }
+
+  @Get('/findAll')
+  async findAll(): Promise<Concert[]> {
+    return this.concertService.findAll();
   }
 }

@@ -36,7 +36,19 @@ export class ConcertService {
       }
       await this.concertRepo.delete(id);
     } catch (error) {
-      console.error('Error creating concert:', error);
+      console.error('Error deleting concert:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async findAll(): Promise<Concert[]> {
+    try {
+      return this.concertRepo.find();
+    } catch (error) {
+      console.error('Error finding all concerts:', error);
       if (error instanceof Error) {
         throw error;
       }
