@@ -1,9 +1,11 @@
+import ConcertTab from "@/components/home/concert-tab";
 import Stat from "@/components/home/stat";
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
+    <div className="flex flex-col items-center min-h-screen space-y-4 pt-10">
       <Stat />
+      <ConcertTab />
     </div>
   );
 }
