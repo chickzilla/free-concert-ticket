@@ -21,12 +21,12 @@ import { toast } from "../ui/use-toast";
 const formSchema = z.object({
   name: z.string().min(1, { message: "Concert name is required" }),
   total_of_seat: z.number().min(1, { message: "Must be at least 1 seat" }),
-  description: z.string().min(5, { message: "Description too short" }),
+  description: z.string().min(1, { message: "Description is required" }),
 });
 
 type CreateConcertValues = z.infer<typeof formSchema>;
 
-export function ConcertCreateForm() {
+export function ConcertCreateForm({ onCreated }: { onCreated: () => void }) {
   const form = useForm<CreateConcertValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,6 +44,7 @@ export function ConcertCreateForm() {
         total_of_seat: data.total_of_seat,
       });
     };
+
     createConcert()
       .then(() => {
         form.reset();
@@ -52,6 +53,7 @@ export function ConcertCreateForm() {
           description: "Concert created successfully",
           isError: false,
         });
+        onCreated();
       })
       .catch((error) => {
         if (error instanceof Error) {

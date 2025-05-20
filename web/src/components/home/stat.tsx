@@ -4,35 +4,10 @@ import StatItem from "./stat-item";
 import allTotalOfSeat from "@/service/concert/allTotalOfSeat";
 import { toast } from "@/components/ui/use-toast";
 
-export default function Stat() {
-  const [totalOfSeats, setTotalOfSeats] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const totalOfSeats = await allTotalOfSeat();
-        setTotalOfSeats(totalOfSeats?.total_of_seat);
-      } catch (error) {
-        if (error instanceof Error) {
-          toast({
-            title: "Error",
-            description: error.message,
-            isError: true,
-          });
-        }
-      }
-    };
-    fetchData();
-    setLoading(false);
-  }, []);
-
-  if (loading) {
-    return;
-  }
+export default function Stat({ totalOfSeats }: { totalOfSeats: number }) {
   return (
     <div className="w-full px-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 ">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <StatItem
           title="Total of seats"
           value={totalOfSeats}
