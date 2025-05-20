@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateConcertDto } from './dto';
 import { Concert } from '../entities';
+import { TotalOfSeatResponse } from './dto/total-of-seats.dto';
 
 @Injectable()
 export class ConcertService {
@@ -49,6 +50,25 @@ export class ConcertService {
       return this.concertRepo.find();
     } catch (error) {
       console.error('Error finding all concerts:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async totalOfSeat(): Promise<TotalOfSeatResponse> {
+    try {
+      const result = await this.concertRepo
+        .createQueryBuilder('concert')
+        .select('SUM(concert.total_of_seat)', 'total')
+        .getRawOne();
+
+      return {
+        total_of_seat: Number(result.total) || 0,
+      };
+    } catch (error) {
+      console.error('Error get total of seat concerts:', error);
       if (error instanceof Error) {
         throw error;
       }

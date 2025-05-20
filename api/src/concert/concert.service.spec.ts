@@ -96,4 +96,37 @@ describe('ConcertService', () => {
       expect(repositoryMock.find).toHaveBeenCalled();
     });
   });
+
+  describe('totalOfSeat()', () => {
+    it('should return total of all seats', async () => {
+      const mockQueryBuilder: any = {
+        select: jest.fn().mockReturnThis(),
+        getRawOne: jest.fn().mockResolvedValue({ total: '350' }),
+      };
+
+      repositoryMock.createQueryBuilder = jest
+        .fn()
+        .mockReturnValue(mockQueryBuilder);
+
+      const result = await service.totalOfSeat();
+
+      expect(result).toEqual({ total_of_seat: 350 });
+      expect(repositoryMock.createQueryBuilder).toHaveBeenCalledWith('concert');
+    });
+
+    it('should return 0 if total is null', async () => {
+      const mockQueryBuilder: any = {
+        select: jest.fn().mockReturnThis(),
+        getRawOne: jest.fn().mockResolvedValue({ total: null }),
+      };
+
+      repositoryMock.createQueryBuilder = jest
+        .fn()
+        .mockReturnValue(mockQueryBuilder);
+
+      const result = await service.totalOfSeat();
+
+      expect(result).toEqual({ total_of_seat: 0 });
+    });
+  });
 });

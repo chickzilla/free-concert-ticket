@@ -10,6 +10,7 @@ import {
 import { CreateConcertDto } from './dto';
 import { Concert } from 'src/entities';
 import { ConcertService } from './concert.service';
+import { TotalOfSeatResponse } from './dto/total-of-seats.dto';
 
 @Controller('concert')
 export class ConcertController {
@@ -28,5 +29,10 @@ export class ConcertController {
   @Get('/findAll')
   async findAll(): Promise<Concert[]> {
     return this.concertService.findAll();
+  }
+
+  @Get('/totalOfSeat')
+  async totalOfSeat(): Promise<TotalOfSeatResponse> {
+    return this.concertService.totalOfSeat();
   }
 }
