@@ -21,7 +21,9 @@ export function Toaster() {
             key={id}
             {...props}
             className={`${
-              isError ? "bg-pink border-red" : "bg-green-200 border-green-700"
+              isError
+                ? "bg-red-300 border-red"
+                : "bg-green-200 border-green-700"
             } opacity-85 border-2 font-sukhumvit`}
           >
             <div className="grid gap-1">

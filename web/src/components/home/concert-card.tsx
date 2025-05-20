@@ -1,3 +1,5 @@
+"use client";
+
 import { Concert } from "@/interface";
 import { UsersRound, Trash2, XCircle } from "lucide-react";
 import { MdCancel } from "react-icons/md";
@@ -16,6 +18,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import deleteConcert from "@/service/concert/delete";
 import { toast } from "../ui/use-toast";
+import reserveConcert from "@/service/concert/reserve";
+import { useState } from "react";
+import { ReservationAction } from "@/const";
 
 export default function ConcertCard({
   concert,
@@ -24,6 +29,8 @@ export default function ConcertCard({
   concert: Concert;
   onDelete?: (id: string) => void;
 }) {
+  const [childConcert, setChildConcert] = useState<Concert>(concert);
+
   const handleDelete = async () => {
     try {
       await deleteConcert({ id: concert.id });
@@ -33,7 +40,7 @@ export default function ConcertCard({
         isError: false,
       });
       if (onDelete) {
-        onDelete(concert.id);
+        onDelete(childConcert.id);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -45,17 +52,51 @@ export default function ConcertCard({
       }
     }
   };
+
+  const handleReserve = async () => {
+    if (concert.isReserve) {
+      toast({
+        title: "Error",
+        description: "Concert already reserved",
+        isError: true,
+      });
+      return;
+    }
+
+    try {
+      await reserveConcert(concert.id);
+      setChildConcert((prev) => ({
+        ...prev,
+        isReserve: true,
+      }));
+      toast({
+        title: "Success",
+        description: "Concert reserved successfully",
+        isError: false,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          isError: true,
+        });
+      }
+    }
+  };
   return (
-    <div className="border rounded-md p-4 space-y-2 shadow-sm w-full">
-      <div className="sm:text-2xl md:text-3xl font-semibold text-blue-400 border-b border-gray-200 pb-2">
-        {concert.name}
+    <div className="border rounded-md p-4 space-y-2 border-gray-300 w-full">
+      <div className="sm:text-2xl md:text-3xl font-semibold text-blue-500 border-b border-gray-300 pb-2">
+        {childConcert.name}
       </div>
 
-      <p className="text-xs sm:text-sm text-gray-700">{concert.description}</p>
+      <p className="text-xs sm:text-sm text-gray-700">
+        {childConcert.description}
+      </p>
 
       <div className="flex items-center justify-between mt-3">
         <div className="flex items-center gap-2 text-gray-700 text-xs sm:text-sm">
-          <UsersRound size={16} /> {concert.total_of_seat}
+          <UsersRound size={16} /> {childConcert.total_of_seat}
         </div>
 
         {onDelete ? (
@@ -83,7 +124,7 @@ export default function ConcertCard({
              truncate overflow-hidden text-ellipsis whitespace-nowrap max-w-[250px] mx-auto"
                 >
                   &quot;
-                  {concert.name}
+                  {childConcert.name}
                   &quot;
                 </AlertDialogDescription>
               </AlertDialogHeader>
@@ -103,7 +144,24 @@ export default function ConcertCard({
             </AlertDialogContent>
           </AlertDialog>
         ) : (
-          <Button></Button>
+          <>
+            {childConcert?.isReserve ? (
+              <Button
+                size="sm"
+                className="hover:cursor-pointer px-3 py-1 text-[10px] sm:text-xs sm:px-3 sm:py-2 bg-red-500 text-white flex items-center gap-1 hover:bg-red-700"
+              >
+                Cancel
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                className="hover:cursor-pointer px-3 py-1 text-[10px] sm:text-xs sm:px-3 sm:py-2 bg-blue-500 text-white flex items-center gap-1 hover:bg-blue-700"
+                onClick={handleReserve}
+              >
+                Reserve
+              </Button>
+            )}
+          </>
         )}
       </div>
     </div>
