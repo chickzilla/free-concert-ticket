@@ -18,9 +18,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import deleteConcert from "@/service/concert/delete";
 import { toast } from "../ui/use-toast";
-import reserveConcert from "@/service/concert/reserve";
+import reserveConcert from "@/service/reservation/reserve";
 import { useState } from "react";
-import { ReservationAction } from "@/const";
+import cancelConcert from "@/service/reservation/cancel";
 
 export default function ConcertCard({
   concert,
@@ -54,7 +54,7 @@ export default function ConcertCard({
   };
 
   const handleReserve = async () => {
-    if (concert.isReserve) {
+    if (childConcert.isReserve) {
       toast({
         title: "Error",
         description: "Concert already reserved",
@@ -72,6 +72,38 @@ export default function ConcertCard({
       toast({
         title: "Success",
         description: "Concert reserved successfully",
+        isError: false,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          isError: true,
+        });
+      }
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!childConcert.isReserve) {
+      toast({
+        title: "Error",
+        description: "Concert not reserved",
+        isError: true,
+      });
+      return;
+    }
+
+    try {
+      await cancelConcert(concert.id);
+      setChildConcert((prev) => ({
+        ...prev,
+        isReserve: false,
+      }));
+      toast({
+        title: "Success",
+        description: "Concert reservation cancelled successfully",
         isError: false,
       });
     } catch (error) {
@@ -149,6 +181,7 @@ export default function ConcertCard({
               <Button
                 size="sm"
                 className="hover:cursor-pointer px-3 py-1 text-[10px] sm:text-xs sm:px-3 sm:py-2 bg-red-500 text-white flex items-center gap-1 hover:bg-red-700"
+                onClick={handleCancel}
               >
                 Cancel
               </Button>
