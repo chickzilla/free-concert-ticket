@@ -14,11 +14,14 @@ export default function CarouselUser({
 }) {
   const loginHandler = async () => {
     try {
-      const res = await login(name);
-      if (res) {
-        localStorage.setItem("jwt", res?.jwt);
-        window.location.href = "/home";
-      }
+      await login(name);
+
+      toast({
+        title: "Success",
+        description: `Logged in as ${name}`,
+        isError: false,
+      });
+      window.location.href = "/home";
     } catch (error) {
       if (error instanceof Error) {
         toast({

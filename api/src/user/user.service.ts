@@ -9,7 +9,7 @@ import { User } from '../entities';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
-import { LoginDto, LoginResponse } from './dto/login';
+import { LoginDto } from './dto/login';
 
 @Injectable()
 export class UserService {
@@ -19,18 +19,28 @@ export class UserService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(loginDTO: LoginDto): Promise<LoginResponse> {
-    const { username } = loginDTO;
-    const user = await this.userRepository.findOne({ where: { username } });
+  async login(loginDTO: LoginDto, res: Response): Promise<void> {
+    const user = await this.userRepository.findOne({
+      where: { username: loginDTO.username },
+    });
+
+    if (!user) throw new NotFoundException('User not found');
 
     const token = await this.jwtService.signAsync(
-      {
-        username: user.username,
-        role: user.role,
-      },
+      { username: user.username, role: user.role },
       { secret: process.env.JWT_SECRET },
     );
 
-    return { jwt: token };
+    res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    res.cookie('role', user.role, {
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
   }
 }

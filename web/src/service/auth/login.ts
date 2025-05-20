@@ -1,11 +1,12 @@
 import { LoginResponse } from "@/interface";
 
-export default async function login(username: string): Promise<LoginResponse> {
+export default async function login(username: string): Promise<void> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify({
       username: username,
     }),

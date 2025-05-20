@@ -19,7 +19,17 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
 
   useEffect(() => {
     const stored = localStorage.getItem("navbarExpanded");
-    setExpanded(stored === "true");
+
+    const isMobile = window.innerWidth < 680;
+    if (isMobile) {
+      setExpanded(false);
+      return;
+    }
+    if (stored === null) {
+      setExpanded(!isMobile);
+    } else {
+      setExpanded(stored === "true");
+    }
   }, []);
 
   const toggleExpand = () => {

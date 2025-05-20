@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { User } from '../entities';
 import { LoginDto } from './dto/login';
 import { UserRole } from '../const';
+import { Response } from 'express';
 
 type MockType<T> = {
   [P in keyof T]?: jest.Mock<any>;
@@ -28,6 +29,10 @@ describe('UserService', () => {
 
   const mockJwt = 'mock.jwt.token';
 
+  const mockResponse = {
+    cookie: jest.fn().mockReturnThis(),
+  } as unknown as Response;
+
   beforeEach(async () => {
     jwtServiceMock = {
       signAsync: jest.fn().mockResolvedValue(mockJwt),
@@ -49,6 +54,8 @@ describe('UserService', () => {
 
     service = module.get<UserService>(UserService);
     repositoryMock = module.get(getRepositoryToken(User));
+
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -56,20 +63,31 @@ describe('UserService', () => {
   });
 
   describe('login()', () => {
-    it('should return a jwt token on successful login', async () => {
+    it('should set JWT and role cookies on successful login', async () => {
       const loginDto: LoginDto = { username: 'testuser' };
       repositoryMock.findOne!.mockResolvedValue(mockUser);
 
-      const result = await service.login(loginDto);
+      await service.login(loginDto, mockResponse);
 
       expect(repositoryMock.findOne).toHaveBeenCalledWith({
         where: { username: 'testuser' },
       });
+
       expect(jwtServiceMock.signAsync).toHaveBeenCalledWith(
         { username: 'testuser', role: UserRole.USER },
         { secret: process.env.JWT_SECRET },
       );
-      expect(result).toEqual({ jwt: mockJwt });
+
+      expect(mockResponse.cookie).toHaveBeenCalledWith(
+        'token',
+        mockJwt,
+        expect.any(Object),
+      );
+      expect(mockResponse.cookie).toHaveBeenCalledWith(
+        'role',
+        UserRole.USER,
+        expect.any(Object),
+      );
     });
   });
 });
