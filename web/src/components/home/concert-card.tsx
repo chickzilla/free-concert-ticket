@@ -58,49 +58,53 @@ export default function ConcertCard({
           <UsersRound size={16} /> {concert.total_of_seat}
         </div>
 
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="destructive"
-              size="sm"
-              className="hover:cursor-pointer px-2 py-1 text-[10px] sm:text-xs sm:px-3 sm:py-2 bg-red-500 hover:bg-red-600 text-white flex items-center gap-1"
-            >
-              <Trash2 size={12} className="sm:size-[14px]" />
-              Delete
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent className="text-center">
-            <div className="flex justify-center">
-              <MdCancel className="text-red-500" size={40} />
-            </div>
-            <AlertDialogHeader>
-              <AlertDialogTitle className="text-base sm:text-lg font-semibold text-center text-black">
-                Are you sure to delete?
-              </AlertDialogTitle>
-              <AlertDialogDescription
-                className="text-base sm:text-lg font-semibold text-center text-black
+        {onDelete ? (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="hover:cursor-pointer px-2 py-1 text-[10px] sm:text-xs sm:px-3 sm:py-2 bg-red-500 hover:bg-red-600 text-white flex items-center gap-1"
+              >
+                <Trash2 size={12} className="sm:size-[14px]" />
+                Delete
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="text-center">
+              <div className="flex justify-center">
+                <MdCancel className="text-red-500" size={40} />
+              </div>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-base sm:text-lg font-semibold text-center text-black">
+                  Are you sure to delete?
+                </AlertDialogTitle>
+                <AlertDialogDescription
+                  className="text-base sm:text-lg font-semibold text-center text-black
              truncate overflow-hidden text-ellipsis whitespace-nowrap max-w-[250px] mx-auto"
-              >
-                &quot;
-                {concert.name}
-                &quot;
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter className="flex justify-center mt-4 w-full">
-              <AlertDialogCancel className="px-4 hover:cursor-pointer text-black">
-                Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => {
-                  handleDelete();
-                }}
-                className="bg-red-500 hover:bg-red-600 hover:cursor-pointer"
-              >
-                Yes, Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+                >
+                  &quot;
+                  {concert.name}
+                  &quot;
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="flex justify-center mt-4 w-full">
+                <AlertDialogCancel className="px-4 hover:cursor-pointer text-black">
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    handleDelete();
+                  }}
+                  className="bg-red-500 hover:bg-red-600 hover:cursor-pointer"
+                >
+                  Yes, Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ) : (
+          <Button></Button>
+        )}
       </div>
     </div>
   );
