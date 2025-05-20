@@ -50,6 +50,7 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
   const handleLogout = async () => {
     try {
       await logout();
+      window.location.href = "/";
     } catch (error) {
       if (error instanceof Error) {
         toast({

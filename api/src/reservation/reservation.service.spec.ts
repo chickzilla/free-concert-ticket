@@ -117,10 +117,7 @@ describe('ReservationService', () => {
       repositoryMock.create!.mockReturnValue(mockReservation);
       repositoryMock.save!.mockResolvedValue(mockReservation);
 
-      const result = await service.reserve({
-        concert_id: 'concert1',
-        user_id: 'user1',
-      });
+      const result = await service.reserve('concert1', 'user1');
 
       expect(result).toEqual(mockReservation);
       expect(repositoryMock.create).toHaveBeenCalledWith({
@@ -161,10 +158,7 @@ describe('ReservationService', () => {
       repositoryMock.findOne!.mockResolvedValue(latestReservation);
       repositoryMock.save!.mockResolvedValue(updatedReservation);
 
-      const result = await service.cancel({
-        concert_id: 'concert1',
-        user_id: 'user1',
-      });
+      const result = await service.cancel('concert1', 'user1');
 
       expect(result).toEqual(updatedReservation);
       expect(concertServiceMock.updateTotalOfReservation).toHaveBeenCalledWith(

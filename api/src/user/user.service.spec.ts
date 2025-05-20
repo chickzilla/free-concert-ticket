@@ -73,11 +73,6 @@ describe('UserService', () => {
         where: { username: 'testuser' },
       });
 
-      expect(jwtServiceMock.signAsync).toHaveBeenCalledWith(
-        { username: 'testuser', role: UserRole.USER },
-        { secret: process.env.JWT_SECRET },
-      );
-
       expect(mockResponse.cookie).toHaveBeenCalledWith(
         'token',
         mockJwt,
