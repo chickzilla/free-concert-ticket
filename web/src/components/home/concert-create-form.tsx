@@ -15,6 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Save, User } from "lucide-react";
+import create from "@/service/concert/create";
+import { toast } from "../ui/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Concert name is required" }),
@@ -35,8 +37,31 @@ export function ConcertCreateForm() {
   });
 
   const onSubmit = (data: CreateConcertValues) => {
-    // TODO: call API
-    console.log(data);
+    const createConcert = async () => {
+      const res = await create({
+        name: data.name,
+        description: data.description,
+        total_of_seat: data.total_of_seat,
+      });
+    };
+    createConcert()
+      .then(() => {
+        form.reset();
+        toast({
+          title: "Success",
+          description: "Concert created successfully",
+          isError: false,
+        });
+      })
+      .catch((error) => {
+        if (error instanceof Error) {
+          toast({
+            title: "Error",
+            description: error.message,
+            isError: true,
+          });
+        }
+      });
   };
 
   return (
