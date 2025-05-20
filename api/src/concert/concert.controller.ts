@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  InternalServerErrorException,
   Param,
   ParseUUIDPipe,
   Post,
@@ -18,21 +19,53 @@ export class ConcertController {
 
   @Post('/create')
   async create(@Body() createConcertDto: CreateConcertDto): Promise<Concert> {
-    return this.concertService.create(createConcertDto);
+    try {
+      return await this.concertService.create(createConcertDto);
+    } catch (error) {
+      console.error('Error creating concert:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   @Delete('/delete/:id')
   async delete(@Param('id', new ParseUUIDPipe()) id: string): Promise<void> {
-    return this.concertService.delete(id);
+    try {
+      await this.concertService.delete(id);
+    } catch (error) {
+      console.error('Error deleting concert:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   @Get('/findAll')
   async findAll(): Promise<Concert[]> {
-    return this.concertService.findAll();
+    try {
+      return await this.concertService.findAll();
+    } catch (error) {
+      console.error('Error fetching concerts:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   @Get('/totalOfSeat')
   async totalOfSeat(): Promise<TotalOfSeatResponse> {
-    return this.concertService.totalOfSeat();
+    try {
+      return await this.concertService.totalOfSeat();
+    } catch (error) {
+      console.error('Error fetching total of seats:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
   }
 }

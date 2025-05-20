@@ -17,62 +17,30 @@ export class ConcertService {
   ) {}
 
   async create(createDTP: CreateConcertDto): Promise<Concert> {
-    try {
-      const concert = this.concertRepo.create(createDTP);
-      return this.concertRepo.save(concert);
-    } catch (error) {
-      console.error('Error creating concert:', error);
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new InternalServerErrorException(error.message);
-    }
+    const concert = this.concertRepo.create(createDTP);
+    return this.concertRepo.save(concert);
   }
 
   async delete(id: string): Promise<void> {
-    try {
-      const concert = await this.concertRepo.findOneBy({ id });
-      if (!concert) {
-        throw new BadRequestException('Concert not found');
-      }
-      await this.concertRepo.delete(id);
-    } catch (error) {
-      console.error('Error deleting concert:', error);
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new InternalServerErrorException(error.message);
+    const concert = await this.concertRepo.findOneBy({ id });
+    if (!concert) {
+      throw new BadRequestException('Concert not found');
     }
+    await this.concertRepo.delete(id);
   }
 
   async findAll(): Promise<Concert[]> {
-    try {
-      return this.concertRepo.find();
-    } catch (error) {
-      console.error('Error finding all concerts:', error);
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new InternalServerErrorException(error.message);
-    }
+    return this.concertRepo.find();
   }
 
   async totalOfSeat(): Promise<TotalOfSeatResponse> {
-    try {
-      const result = await this.concertRepo
-        .createQueryBuilder('concert')
-        .select('SUM(concert.total_of_seat)', 'total')
-        .getRawOne();
+    const result = await this.concertRepo
+      .createQueryBuilder('concert')
+      .select('SUM(concert.total_of_seat)', 'total')
+      .getRawOne();
 
-      return {
-        total_of_seat: Number(result.total) || 0,
-      };
-    } catch (error) {
-      console.error('Error get total of seat concerts:', error);
-      if (error instanceof Error) {
-        throw error;
-      }
-      throw new InternalServerErrorException(error.message);
-    }
+    return {
+      total_of_seat: Number(result.total) || 0,
+    };
   }
 }
