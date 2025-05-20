@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ReservationService } from './reservation.service';
 import { viewHistoriesResponseItem } from './dto/histories.dto';
-import { CancelDTO, ReserveDTO } from './dto/reserve.dto';
+import { CancelDTO, countActionResponse, ReserveDTO } from './dto/reserve.dto';
 import { Reservation } from 'src/entities';
 
 @Controller('reservation')
@@ -63,6 +63,19 @@ export class ReservationController {
       return await this.reservationService.cancel(cancelDTO);
     } catch (error) {
       console.error('Error cancelling reservation:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  @Get('/countAction')
+  async countAction(): Promise<countActionResponse> {
+    try {
+      return await this.reservationService.countAction();
+    } catch (error) {
+      console.error('Error counting actions:', error);
       if (error instanceof Error) {
         throw error;
       }

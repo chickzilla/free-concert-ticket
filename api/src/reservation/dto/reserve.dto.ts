@@ -23,3 +23,8 @@ export class CancelDTO {
   @IsUUID()
   user_id: string;
 }
+
+export class countActionResponse {
+  reserveCount: number;
+  cancelCount: number;
+}

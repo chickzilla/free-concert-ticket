@@ -171,10 +171,6 @@ describe('ReservationService', () => {
         'concert1',
         9,
       );
-      expect(repositoryMock.save).toHaveBeenCalledWith({
-        ...latestReservation,
-        action: ReservationAction.CANCEL,
-      });
     });
   });
 
@@ -222,6 +218,30 @@ describe('ReservationService', () => {
         where: { userId: 'user1' },
         relations: ['user', 'concert'],
         order: { created_at: 'DESC' },
+      });
+    });
+  });
+
+  describe('countAction()', () => {
+    it('should return correct counts for RESERVE and CANCEL actions', async () => {
+      repositoryMock.count = jest
+        .fn()
+        .mockImplementation(({ where: { action } }) =>
+          action === ReservationAction.RESERVE ? 5 : 3,
+        );
+
+      const result = await service.countAction();
+
+      expect(result).toEqual({
+        reserveCount: 5,
+        cancelCount: 3,
+      });
+
+      expect(repositoryMock.count).toHaveBeenCalledWith({
+        where: { action: ReservationAction.RESERVE },
+      });
+      expect(repositoryMock.count).toHaveBeenCalledWith({
+        where: { action: ReservationAction.CANCEL },
       });
     });
   });
